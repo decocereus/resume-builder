@@ -1,3 +1,4 @@
+"use client";
 import {
   MapPin,
   Phone,
@@ -10,12 +11,11 @@ import {
 import type { ResumeData } from "@/lib/types";
 import { useCallback } from "react";
 import Link from "next/link";
+import { useResumeContext } from "@/providers/ResumeBuilder";
 
-interface ResumeTemplateProps {
-  data: ResumeData;
-}
-
-export default function ResumeTemplate({ data }: ResumeTemplateProps) {
+export default function ResumeTemplate() {
+  const { resumeData } = useResumeContext();
+  console.log("resumeData", resumeData);
   const {
     personal,
     links,
@@ -25,7 +25,7 @@ export default function ResumeTemplate({ data }: ResumeTemplateProps) {
     internships,
     projects,
     extracurriculars,
-  } = data;
+  } = resumeData;
 
   const renderFormattedText = useCallback(
     (text: string) => {
@@ -135,7 +135,7 @@ export default function ResumeTemplate({ data }: ResumeTemplateProps) {
 
           {/* Skills Section */}
           {skills.items.length > 0 && (
-            <section className="w-full flex flex-col items-center justify-center">
+            <section className="w-full flex flex-col items-center justify-center px-4">
               <h2 className="text-sm font-bold uppercase flex items-center gap-2 mb-3 pb-1 text-black">
                 <span>•</span> SKILLS <span>•</span>
               </h2>

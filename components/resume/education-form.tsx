@@ -1,100 +1,102 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { X, Bold } from "lucide-react"
-import type { Education, EducationItem } from "@/lib/types"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { X, Bold } from "lucide-react";
+import type { EducationItem } from "@/lib/types";
+import { useResumeContext } from "@/providers/ResumeBuilder";
 
-interface EducationFormProps {
-  data: Education
-  updateData: (data: Education) => void
-}
-
-export default function EducationForm({ data, updateData }: EducationFormProps) {
-  const [formData, setFormData] = useState<Education>(data)
+export default function EducationForm() {
+  const { resumeData, addEducation, updateEducation, removeEducation } =
+    useResumeContext();
 
   const handleAddEducation = () => {
-    const newEducation = [
-      ...formData.items,
-      {
-        degree: "",
-        institution: "",
-        location: "",
-        startDate: "",
-        endDate: "",
-        description: "",
-      },
-    ]
-    setFormData({ items: newEducation })
-    updateData({ items: newEducation })
-  }
+    addEducation({
+      degree: "",
+      institution: "",
+      location: "",
+      startDate: "",
+      endDate: "",
+      description: "",
+    });
+  };
 
   const handleRemoveEducation = (index: number) => {
-    const newEducation = formData.items.filter((_, i) => i !== index)
-    setFormData({ items: newEducation })
-    updateData({ items: newEducation })
-  }
+    removeEducation(index);
+  };
 
-  const handleEducationChange = (index: number, field: keyof EducationItem, value: string) => {
-    const newEducation = [...formData.items]
-    newEducation[index] = { ...newEducation[index], [field]: value }
-    setFormData({ items: newEducation })
-    updateData({ items: newEducation })
-  }
+  const handleEducationChange = (
+    index: number,
+    field: keyof EducationItem,
+    value: string
+  ) => {
+    updateEducation(index, { [field]: value } as Partial<EducationItem>);
+  };
 
   const handleMakeBold = (educationIndex: number) => {
-    const textarea = document.getElementById(`edu-description-${educationIndex}`) as HTMLTextAreaElement
-    if (!textarea) return
+    const textarea = document.getElementById(
+      `edu-description-${educationIndex}`
+    ) as HTMLTextAreaElement;
+    if (!textarea) return;
 
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
 
-    if (start === end) return // No text selected
+    if (start === end) return; // No text selected
 
-    const text = textarea.value
-    const selectedText = text.substring(start, end)
-    const newText = text.substring(0, start) + `**${selectedText}**` + text.substring(end)
+    const text = textarea.value;
+    const selectedText = text.substring(start, end);
+    const newText =
+      text.substring(0, start) + `**${selectedText}**` + text.substring(end);
 
     // Update the description with the new text
-    const newEducation = [...formData.items]
-    newEducation[educationIndex].description = newText
-    setFormData({ items: newEducation })
-    updateData({ items: newEducation })
+    handleEducationChange(educationIndex, "description", newText);
 
     // Set focus back to the textarea
     setTimeout(() => {
-      textarea.focus()
-      textarea.setSelectionRange(start + 2, end + 2)
-    }, 0)
-  }
+      textarea.focus();
+      textarea.setSelectionRange(start + 2, end + 2);
+    }, 0);
+  };
 
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Education</h2>
-      <p className="text-muted-foreground">Add your educational background, starting with the most recent.</p>
+      <p className="text-muted-foreground">
+        Add your educational background, starting with the most recent.
+      </p>
       <p className="text-sm bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded border border-yellow-200 dark:border-yellow-900/30">
-        <strong>Tip:</strong> To make text bold, select it and click the Bold button.
+        <strong>Tip:</strong> To make text bold, select it and click the Bold
+        button.
       </p>
 
-      {formData.items.map((education, eduIndex) => (
+      {resumeData.education.items.map((education, eduIndex) => (
         <div key={eduIndex} className="border rounded-lg p-4 space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="font-medium">Education {eduIndex + 1}</h3>
-            <Button variant="ghost" size="sm" onClick={() => handleRemoveEducation(eduIndex)} type="button">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleRemoveEducation(eduIndex)}
+              type="button"
+            >
               <X className="h-4 w-4" />
             </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor={`edu-degree-${eduIndex}`}>Degree / Certificate</Label>
+              <Label htmlFor={`edu-degree-${eduIndex}`}>
+                Degree / Certificate
+              </Label>
               <Input
                 id={`edu-degree-${eduIndex}`}
                 value={education.degree}
-                onChange={(e) => handleEducationChange(eduIndex, "degree", e.target.value)}
+                onChange={(e) =>
+                  handleEducationChange(eduIndex, "degree", e.target.value)
+                }
                 placeholder="BSc Computer Science"
               />
             </div>
@@ -104,7 +106,9 @@ export default function EducationForm({ data, updateData }: EducationFormProps) 
               <Input
                 id={`edu-institution-${eduIndex}`}
                 value={education.institution}
-                onChange={(e) => handleEducationChange(eduIndex, "institution", e.target.value)}
+                onChange={(e) =>
+                  handleEducationChange(eduIndex, "institution", e.target.value)
+                }
                 placeholder="University of Example"
               />
             </div>
@@ -114,7 +118,9 @@ export default function EducationForm({ data, updateData }: EducationFormProps) 
               <Input
                 id={`edu-location-${eduIndex}`}
                 value={education.location}
-                onChange={(e) => handleEducationChange(eduIndex, "location", e.target.value)}
+                onChange={(e) =>
+                  handleEducationChange(eduIndex, "location", e.target.value)
+                }
                 placeholder="New York, USA"
               />
             </div>
@@ -125,7 +131,9 @@ export default function EducationForm({ data, updateData }: EducationFormProps) 
                 <Input
                   id={`edu-start-${eduIndex}`}
                   value={education.startDate}
-                  onChange={(e) => handleEducationChange(eduIndex, "startDate", e.target.value)}
+                  onChange={(e) =>
+                    handleEducationChange(eduIndex, "startDate", e.target.value)
+                  }
                   placeholder="Sep 2018"
                 />
               </div>
@@ -135,7 +143,9 @@ export default function EducationForm({ data, updateData }: EducationFormProps) 
                 <Input
                   id={`edu-end-${eduIndex}`}
                   value={education.endDate}
-                  onChange={(e) => handleEducationChange(eduIndex, "endDate", e.target.value)}
+                  onChange={(e) =>
+                    handleEducationChange(eduIndex, "endDate", e.target.value)
+                  }
                   placeholder="Jun 2022"
                 />
               </div>
@@ -144,7 +154,9 @@ export default function EducationForm({ data, updateData }: EducationFormProps) 
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor={`edu-description-${eduIndex}`}>Description (Optional)</Label>
+              <Label htmlFor={`edu-description-${eduIndex}`}>
+                Description (Optional)
+              </Label>
               <Button
                 variant="outline"
                 size="sm"
@@ -158,12 +170,20 @@ export default function EducationForm({ data, updateData }: EducationFormProps) 
             <Textarea
               id={`edu-description-${eduIndex}`}
               value={education.description}
-              onChange={(e) => handleEducationChange(eduIndex, "description", e.target.value)}
+              onChange={(e) =>
+                handleEducationChange(eduIndex, "description", e.target.value)
+              }
               placeholder="Additional information about your education"
             />
-            <div className="text-xs text-muted-foreground">
-              Preview: {education.description.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")}
-            </div>
+            <div
+              className="text-xs text-muted-foreground"
+              dangerouslySetInnerHTML={{
+                __html: `Preview: ${education.description.replace(
+                  /\*\*(.*?)\*\*/g,
+                  "<strong>$1</strong>"
+                )}`,
+              }}
+            />
           </div>
         </div>
       ))}
@@ -172,6 +192,5 @@ export default function EducationForm({ data, updateData }: EducationFormProps) 
         Add Education
       </Button>
     </div>
-  )
+  );
 }
-

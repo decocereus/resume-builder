@@ -1,31 +1,27 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { PersonalInfo } from "@/lib/types";
+import { useResumeContext } from "@/providers/ResumeBuilder";
 
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import type { PersonalInfo } from "@/lib/types"
-
-interface PersonalInfoFormProps {
-  data: PersonalInfo
-  updateData: (data: PersonalInfo) => void
-}
-
-export default function PersonalInfoForm({ data, updateData }: PersonalInfoFormProps) {
-  const [formData, setFormData] = useState<PersonalInfo>(data)
+export default function PersonalInfoForm() {
+  const { resumeData, updatePersonalInfo } = useResumeContext();
+  const [formData, setFormData] = useState<PersonalInfo>(resumeData?.personal);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-    updateData({
+    }));
+    updatePersonalInfo({
       ...formData,
       [name]: value,
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -68,7 +64,13 @@ export default function PersonalInfoForm({ data, updateData }: PersonalInfoFormP
 
         <div className="space-y-2">
           <Label htmlFor="phone">Phone</Label>
-          <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} placeholder="+1 234 567 890" />
+          <Input
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="+1 234 567 890"
+          />
         </div>
 
         <div className="space-y-2">
@@ -84,7 +86,13 @@ export default function PersonalInfoForm({ data, updateData }: PersonalInfoFormP
 
         <div className="space-y-2">
           <Label htmlFor="country">Country</Label>
-          <Input id="country" name="country" value={formData.country} onChange={handleChange} placeholder="USA" />
+          <Input
+            id="country"
+            name="country"
+            value={formData.country}
+            onChange={handleChange}
+            placeholder="USA"
+          />
         </div>
 
         <div className="space-y-2">
@@ -110,6 +118,5 @@ export default function PersonalInfoForm({ data, updateData }: PersonalInfoFormP
         </div>
       </div>
     </div>
-  )
+  );
 }
-
