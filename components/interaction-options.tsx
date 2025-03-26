@@ -4,7 +4,10 @@ import { Button } from "./ui/button";
 import { PenLine } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useResumeContext } from "@/providers/ResumeBuilder";
-import PDFDownloader from "./pdf/pdf-download";
+import dynamic from "next/dynamic";
+const PDFDownloader = dynamic(() => import("./pdf/pdf-download"), {
+  ssr: false,
+});
 
 const InteractionOptions = () => {
   const router = useRouter();
