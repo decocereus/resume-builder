@@ -1,5 +1,6 @@
 {
   "name": "resume-builder",
+  "author": "Amartya Singh",
   "version": "0.1.0",
   "private": true,
   "scripts": {
