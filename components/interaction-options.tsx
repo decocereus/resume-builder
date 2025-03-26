@@ -11,7 +11,7 @@ const InteractionOptions = () => {
   const { resumeData } = useResumeContext();
   const handleEdit = () => router.push("/builder");
   return (
-    <div className="flex gap-x-3">
+    <div className="flex gap-x-3 mb-8">
       <Button variant="outline" onClick={handleEdit}>
         <PenLine className="h-4 w-4 mr-2" />
         Edit Resume

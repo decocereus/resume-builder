@@ -13,27 +13,67 @@ export const RESUME_TABS = [
 
 export const MOCK_DATA: ResumeData = {
   personal: {
-    fullName: "Amartya Singh",
-    jobTitle: "Fronted Developer",
-    email: "amartyasingh84@gmail.com",
-    phone: "+919837001410",
-    location: "New Delhi",
-    country: "India",
-    dateOfBirth: "16-04-2000",
-    nationality: "Indian",
+    fullName: "Alex Carter",
+    jobTitle: "Full Stack Developer",
+    email: "alex.carter@example.com",
+    phone: "555-1234-567",
+    location: "San Francisco",
+    country: "USA",
+    dateOfBirth: "05-12-1995",
+    nationality: "American",
   },
   links: {
     items: [
       {
         label: "Portfolio",
-        url: "https://decocereus.vercel.app/",
+        url: "https://alexdevportfolio.com/",
+      },
+      {
+        label: "LinkedIn",
+        url: "https://www.linkedin.com/in/alexcarterdev/",
+      },
+      {
+        label: "Github",
+        url: "https://github.com/alexcarterdev",
+      },
+      {
+        label: "Certifications",
+        url: "https://certifications.example.com/alex-carter",
       },
     ],
   },
   skills: {
     items: [
       {
+        name: "JavaScript",
+        proficiency: 5,
+      },
+      {
         name: "React",
+        proficiency: 4,
+      },
+      {
+        name: "Node.js",
+        proficiency: 4,
+      },
+      {
+        name: "GraphQL",
+        proficiency: 3,
+      },
+      {
+        name: "Docker",
+        proficiency: 3,
+      },
+      {
+        name: "AWS",
+        proficiency: 4,
+      },
+      {
+        name: "SQL",
+        proficiency: 4,
+      },
+      {
+        name: "Web3",
         proficiency: 3,
       },
     ],
@@ -41,19 +81,28 @@ export const MOCK_DATA: ResumeData = {
   experience: {
     items: [
       {
-        title: "Software Development Engineer (Swift, SwiftUI, Objective-C)",
-        company: "Amadeus",
-        location: "London, United Kingdom",
-        startDate: "July 2022",
-        endDate: "May 2023",
+        title: "Software Engineer",
+        company: "TechSolutions Inc.",
+        location: "Remote",
+        startDate: "January 2023",
+        endDate: "Present",
         achievements: [
-          "Devised 10+ features for **20+ global airlines** to enhance traveler experience",
-          "Integrated market leaders into app code base to optimize agent workflow by 25%",
-          "Integrated market leaders into app code base to optimize agent workflow by 25%",
-          "Integrated market leaders into app code base to optimize agent workflow by 25%",
-          "Integrated market leaders into app code base to optimize agent workflow by 25%",
-          "Integrated market leaders into app code base to optimize agent workflow by 25%",
-          "Integrated market leaders into app code base to optimize agent workflow by 25%",
+          "Developed a **real-time chat application** with **WebSockets**",
+          "Improved API performance by **30%** with optimized queries",
+          "Led a **migration to microservices architecture**",
+          "Implemented **CI/CD pipelines**, reducing deployment time by **50%**",
+        ],
+      },
+      {
+        title: "Frontend Developer",
+        company: "Innovate Labs",
+        location: "New York",
+        startDate: "June 2021",
+        endDate: "December 2022",
+        achievements: [
+          "Developed a **dashboard UI** using **React & Tailwind CSS**",
+          "Integrated **OAuth authentication** with Google and GitHub",
+          "Boosted application speed by **40%** through code-splitting",
         ],
       },
     ],
@@ -61,11 +110,11 @@ export const MOCK_DATA: ResumeData = {
   education: {
     items: [
       {
-        degree: "Computer Science ",
-        institution: "KCL",
-        location: "London",
-        startDate: "2019",
-        endDate: "2022",
+        degree: "B.Sc. in Computer Science",
+        institution: "University of California, Berkeley",
+        location: "Berkeley, USA",
+        startDate: "2014",
+        endDate: "2018",
         description: "",
       },
     ],
@@ -73,15 +122,14 @@ export const MOCK_DATA: ResumeData = {
   internships: {
     items: [
       {
-        title: "Something",
-        company: "somewhere",
-        location: "Somtime",
-        startDate: "Hun 2021",
-        endDate: "Aug 2020",
+        title: "Software Developer Intern",
+        company: "StartupX",
+        location: "San Francisco, USA",
+        startDate: "May 2017",
+        endDate: "August 2017",
         achievements: [
-          "Integrated market leaders into app code base to optimize agent workflow by 25%",
-          "Integrated market leaders into app code base to optimize agent workflow by 25%",
-          "Integrated market leaders into app code base to optimize agent workflow by 25%",
+          "Developed a **REST API** for a fintech startup",
+          "Implemented a **React-based dashboard** for admin users",
         ],
       },
     ],
@@ -89,14 +137,29 @@ export const MOCK_DATA: ResumeData = {
   projects: {
     items: [
       {
-        name: "Web",
-        details: ["Visited something"],
-        url: "https://visited-client.vercel.app/",
+        name: "AI-Powered Resume Builder",
+        details: [
+          "Built a **resume generation tool** using **Next.js & OpenAI API**",
+          "Implemented **PDF export functionality** for users",
+        ],
+        url: "https://resume-builder.ai/",
+      },
+      {
+        name: "Crypto Price Tracker",
+        details: [
+          "Developed a **real-time crypto price tracker** using **React & Web3.js**",
+          "Integrated **CoinGecko API** for fetching live market data",
+        ],
+        url: "https://crypto-tracker.example.com/",
       },
     ],
   },
   extracurriculars: {
-    items: ["yeah", "lets go", "builder"],
+    items: [
+      "Co-organizer of SF Dev Meetup",
+      "Volunteer mentor at CodeForAll",
+      "Contributor to open-source Web3 projects",
+    ],
   },
 };
 

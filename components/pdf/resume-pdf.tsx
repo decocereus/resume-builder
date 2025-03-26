@@ -10,10 +10,6 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import { ResumeData } from "@/lib/types";
-import BriefCase from "../../public/briefcase.png";
-import Star from "../../public/star.png";
-import People from "../../public/people.png";
-import GraduationCap from "../../public/graduation-cap.png";
 
 Font.register({
   family: "Roboto",
@@ -30,22 +26,22 @@ const styles = StyleSheet.create({
   page: {
     flexDirection: "column",
     backgroundColor: "#FFFFFF",
-    padding: 24,
+    padding: 16,
     fontFamily: "Roboto",
     fontSize: 11,
     color: "#000000",
   },
   // Header styles
   header: {
-    marginBottom: 6,
+    marginBottom: 2,
     textAlign: "center",
   },
   name: {
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: "Roboto-Bold",
-    marginBottom: 4,
+    marginBottom: 2,
     textTransform: "uppercase",
-    letterSpacing: 1,
+    letterSpacing: 0.1,
   },
   headerInfo: {
     flexDirection: "row",
@@ -59,36 +55,38 @@ const styles = StyleSheet.create({
   // Main content container
   contentContainer: {
     flexDirection: "row",
-    marginTop: 16,
+    marginTop: 12,
   },
   // Left column styles (1/3 width)
   leftColumn: {
-    width: "33%",
-    paddingRight: 16,
+    width: "25%",
+    paddingRight: 4,
+    textAlign: "center",
   },
   // Right column styles (2/3 width)
   rightColumn: {
-    width: "67%",
-    paddingLeft: 16,
+    width: "75%",
+    paddingLeft: 4,
   },
   // Section styles
   section: {
-    marginBottom: 12,
+    width: "100%",
+    marginBottom: 4,
+    marginTop: 4,
   },
   sectionHeading: {
     flexDirection: "row",
-    gap: 6,
+    gap: 4,
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingBottom: 3,
-    marginBottom: 12,
+    marginBottom: 2,
   },
   // Left column section titles
   leftSectionTitle: {
     fontFamily: "Roboto-Bold",
     fontSize: 12,
     textTransform: "uppercase",
-    marginBottom: 6,
+    marginBottom: 4,
     textAlign: "center",
   },
   // Right column section titles with icon space
@@ -105,6 +103,7 @@ const styles = StyleSheet.create({
   link: {
     color: "#000000",
     textDecoration: "underline",
+    marginBottom: 2,
   },
   // Timeline item styles for right column
   timelineItem: {
@@ -112,8 +111,9 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1,
     borderLeftColor: "#000000", // gray-300
     borderLeftStyle: "solid",
-    marginBottom: 15,
+    marginBottom: 5,
     position: "relative",
+    width: "100%",
   },
   timelineDot: {
     width: 4,
@@ -133,14 +133,16 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 10,
     color: "#6B7280", // gray-500
-    marginBottom: 5,
+    marginBottom: 3,
   },
   bulletList: {
-    marginLeft: 15,
+    paddingLeft: 4,
+    width: "100%",
   },
   bulletItem: {
     flexDirection: "row",
-    marginBottom: 3,
+    marginBottom: 1,
+    width: "100%",
   },
   bullet: {
     width: 10,
@@ -152,7 +154,7 @@ const styles = StyleSheet.create({
   },
   // Skills bar
   skillContainer: {
-    marginBottom: 8,
+    marginBottom: 6,
     width: "100%",
     alignItems: "center",
   },
@@ -183,13 +185,17 @@ const renderRichText = (text: string, baseStyle = {}) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       const content = part.slice(2, -2);
       return (
-        <Text key={i} style={[baseStyle, { fontFamily: "Roboto-Bold" }]}>
+        <Text
+          key={i}
+          style={[baseStyle, { fontFamily: "Roboto-Bold" }]}
+          wrap={true}
+        >
           {content}
         </Text>
       );
     }
     return part ? (
-      <Text key={i} style={baseStyle}>
+      <Text key={i} style={baseStyle} wrap={true}>
         {part}
       </Text>
     ) : null;
@@ -201,7 +207,6 @@ const ResumePDF = ({ resumeData }: { resumeData: ResumeData }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header Section - Centered at the top */}
         <View style={styles.header}>
           <Text style={styles.name}>{resumeData.personal.fullName}</Text>
           <View style={styles.headerInfo}>
@@ -229,11 +234,8 @@ const ResumePDF = ({ resumeData }: { resumeData: ResumeData }) => {
           </View>
         </View>
 
-        {/* Content with 2 columns */}
         <View style={styles.contentContainer}>
-          {/* Left Column - 1/3 width */}
           <View style={styles.leftColumn}>
-            {/* Details Section */}
             <View style={[styles.section, styles.centerAlign]}>
               <Text style={styles.leftSectionTitle}>• DETAILS •</Text>
               <View style={styles.centerAlign}>
@@ -265,20 +267,15 @@ const ResumePDF = ({ resumeData }: { resumeData: ResumeData }) => {
                     <Text
                       style={{
                         color: "#6B7280",
-                        marginTop: 5,
+                        marginTop: 2,
                         marginBottom: 2,
                       }}
                     >
-                      Date / Place of birth
+                      Date of birth
                     </Text>
                     <Text style={{ marginBottom: 2 }}>
                       {resumeData.personal.dateOfBirth}
                     </Text>
-                    {resumeData.personal.country && (
-                      <Text style={{ marginBottom: 2 }}>
-                        {resumeData.personal.country}
-                      </Text>
-                    )}
                   </>
                 )}
                 {resumeData.personal.nationality && (
@@ -374,9 +371,7 @@ const ResumePDF = ({ resumeData }: { resumeData: ResumeData }) => {
                       {job.achievements.map((achievement, i) => (
                         <View key={i} style={styles.bulletItem}>
                           <Text style={styles.bullet}>• </Text>
-                          <View style={styles.bulletText}>
-                            {renderRichText(achievement, { fontSize: 10 })}
-                          </View>
+                          {renderRichText(achievement, { fontSize: 10 })}
                         </View>
                       ))}
                     </View>
@@ -436,9 +431,7 @@ const ResumePDF = ({ resumeData }: { resumeData: ResumeData }) => {
                       {internship.achievements.map((achievement, i) => (
                         <View key={i} style={styles.bulletItem}>
                           <Text style={styles.bullet}>• </Text>
-                          <View style={styles.bulletText}>
-                            {renderRichText(achievement, { fontSize: 10 })}
-                          </View>
+                          {renderRichText(achievement, { fontSize: 10 })}
                         </View>
                       ))}
                     </View>
@@ -456,26 +449,58 @@ const ResumePDF = ({ resumeData }: { resumeData: ResumeData }) => {
                 </View>
 
                 {resumeData.projects.items.map((project, index) => (
-                  <View key={index} style={styles.timelineItem}>
+                  <View
+                    key={index}
+                    style={{ ...styles.timelineItem, width: "100%" }}
+                  >
                     <View style={styles.timelineDot} />
-                    <Text style={styles.itemTitle}>{project.name}</Text>
+                    <Text style={styles.itemTitle}>
+                      {project.name}
+                      {project.name === "Resume Builder" && (
+                        <Text
+                          style={{
+                            color: "#4B5563",
+                            fontWeight: 400,
+                            margin: 0,
+                            padding: 0,
+                            fontSize: 8,
+                          }}
+                        >
+                          {"   "} (This resume is generated via this project)
+                        </Text>
+                      )}
+                    </Text>
+
                     <View style={styles.bulletList}>
                       {project.details.map((detail, i) => (
                         <View key={i} style={styles.bulletItem}>
                           <Text style={styles.bullet}>• </Text>
-                          <View style={styles.bulletText}>
-                            {renderRichText(detail, { fontSize: 10 })}
-                          </View>
+                          {renderRichText(detail, { fontSize: 10 })}
                         </View>
                       ))}
                     </View>
                     {project.url && (
-                      <Link
-                        src={project.url}
-                        style={[styles.link, { fontSize: 10, marginTop: 3 }]}
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "flex-start",
+                          width: "100%",
+                          gap: 2,
+                        }}
                       >
-                        Project: {project.url}
-                      </Link>
+                        <Image
+                          src={"/link.png"}
+                          style={{ width: 10, height: 10, marginTop: 5 }}
+                        />
+
+                        <Link
+                          src={project.url}
+                          style={[styles.link, { fontSize: 10, marginTop: 3 }]}
+                        >
+                          Project: {project.url}
+                        </Link>
+                      </View>
                     )}
                   </View>
                 ))}

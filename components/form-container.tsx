@@ -41,7 +41,7 @@ const FormContainer = () => {
       onValueChange={setActiveTab}
       className="max-w-4xl mx-auto"
     >
-      <TabsList className="grid grid-cols-4 md:grid-cols-8 mb-8">
+      <TabsList className="grid grid-cols-4 md:grid-cols-8 xl:grid-rows-8 mb-8">
         <TabsTrigger value="personal">Personal</TabsTrigger>
         <TabsTrigger value="links">Links</TabsTrigger>
         <TabsTrigger value="skills">Skills</TabsTrigger>
