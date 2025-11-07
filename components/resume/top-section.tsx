@@ -1,6 +1,6 @@
 "use client";
 import { useResumeContext } from "@/providers/ResumeBuilder";
-import { MapPin, Phone } from "lucide-react";
+import { MapPin, Mail } from "lucide-react";
 import React from "react";
 
 const TopSection = () => {
@@ -21,12 +21,12 @@ const TopSection = () => {
             </p>
           </>
         )}
-        {resumeData?.personal.phone && (
+        {resumeData?.personal.email && (
           <>
             <span>•</span>
             <p className="flex items-center gap-x-1">
-              <Phone size={14} />
-              {resumeData?.personal.phone}
+              <Mail size={14} />
+              {resumeData?.personal.email}
             </p>
           </>
         )}

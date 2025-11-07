@@ -1,6 +1,6 @@
 "use client";
 import { useResumeContext } from "@/providers/ResumeBuilder";
-import { Briefcase, GraduationCap, LinkIcon, Star, Users } from "lucide-react";
+import { Briefcase, Users } from "lucide-react";
 import Link from "next/link";
 import React, { useMemo } from "react";
 
@@ -33,6 +33,7 @@ const TimelineItem = ({
   startDate,
   endDate,
   achievements,
+  techStack,
   icon: Icon,
 }: {
   title: string;
@@ -41,6 +42,7 @@ const TimelineItem = ({
   startDate: string;
   endDate?: string;
   achievements?: string[];
+  techStack?: string[];
   icon: React.ElementType;
 }) => {
   return (
@@ -51,6 +53,11 @@ const TimelineItem = ({
       </h3>
       <p className="text-gray-500 mb-1.5">
         {startDate} — {endDate ?? "Present"}
+        {techStack && techStack.length > 0 && (
+          <span className="ml-2 text-xs text-gray-600">
+            • Tech: {techStack.join(", ")}
+          </span>
+        )}
       </p>
       {achievements && (
         <ul className="list-disc pl-5 space-y-1 text-black">
@@ -77,7 +84,20 @@ const ProjectItem = ({
   return (
     <div className="relative pl-4">
       <Dot />
-      <h3 className="font-bold text-black">{name}</h3>
+      <h3 className="font-bold text-black">
+        {url ? (
+          <Link
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-black underline"
+          >
+            {name}
+          </Link>
+        ) : (
+          name
+        )}
+      </h3>
       <ul className="list-disc pl-3 space-y-1 mb-2 text-black">
         {details.map((detail, i) => (
           <li key={i}>
@@ -85,20 +105,6 @@ const ProjectItem = ({
           </li>
         ))}
       </ul>
-      {url && (
-        <p className="flex items-center gap-1 text-black">
-          <LinkIcon size={14} />
-          Project:{" "}
-          <Link
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-black underline"
-          >
-            {url}
-          </Link>
-        </p>
-      )}
     </div>
   );
 };
@@ -119,7 +125,7 @@ const SectionContainer = ({
       {items.length > 0 && (
         <section>
           <h2 className="flex items-center gap-x-2 font-bold mb-1 text-black">
-            <Icon size={18} className="text-gray-700" />
+            <Icon size={18} className="text-gray-700 -ml-2" />
             {title}
           </h2>
           <div className="space-y-2 border-l-2 border-gray-300 print:border-gray-300">
@@ -159,6 +165,9 @@ const SectionContainer = ({
                           : []
                         : item.achievements
                     }
+                    techStack={
+                      type === "experience" ? item.techStack : undefined
+                    }
                     icon={Icon}
                   />
                 ))}
@@ -171,7 +180,14 @@ const SectionContainer = ({
 
 const RightSection = () => {
   const { resumeData } = useResumeContext();
-  const { experience, education, internships, projects } = resumeData;
+  const { experience, internships, projects } = resumeData;
+  const portfolioLink =
+    resumeData.links.items.find(
+      (l) => l.label && l.label.toLowerCase() === "portfolio"
+    ) || resumeData.links.items[0];
+  const portfolioDomain = portfolioLink
+    ? portfolioLink.url.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]
+    : undefined;
 
   return (
     <div className="md:w-3/4 space-y-3 pl-1">
@@ -181,24 +197,61 @@ const RightSection = () => {
         items={experience.items}
         type="experience"
       />
-      <SectionContainer
-        title="EDUCATION AND ACADEMICS"
-        icon={GraduationCap}
-        items={education.items}
-        type="education"
-      />
-      <SectionContainer
-        title="INTERNSHIPS"
-        icon={Users}
-        items={internships.items}
-        type="internships"
-      />
-      <SectionContainer
-        title="PROJECTS"
-        icon={Star}
-        items={projects.items}
-        type="projects"
-      />
+      {(internships.items.length > 0 || projects.items.length > 0) && (
+        <section>
+          <h2 className="flex items-center gap-x-2 font-bold mb-1 text-black">
+            <Users size={18} className="text-gray-700 -ml-2" />
+            INTERNSHIPS & PROJECTS
+          </h2>
+          <div className="space-y-2">
+            {internships.items.map((intItem, index) => {
+              const summary = (intItem.achievements || []).find(
+                (a) => a && a.trim().length > 0
+              );
+              return (
+                <div key={`int-${index}`} className="pl-4 relative">
+                  <Dot />
+                  <p className="font-bold text-black">
+                    {intItem.title}, {intItem.company} — {intItem.location} (
+                    {intItem.startDate}
+                    {intItem.endDate ? `–${intItem.endDate}` : ""})
+                  </p>
+                  {summary && <p className="text-black mt-1">{summary}</p>}
+                </div>
+              );
+            })}
+            {projects.items.length > 0 && (
+              <div className="pl-4 relative">
+                <Dot />
+                <p className="text-black font-bold flex flex-wrap items-center">
+                  {projects.items.map((p, idx) => (
+                    <span key={`projname-${idx}`} className="flex items-center">
+                      {idx > 0 && <span className="mx-1">•</span>}
+                      {p.url ? (
+                        <Link
+                          href={p.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline text-black"
+                        >
+                          {p.name}
+                        </Link>
+                      ) : (
+                        <span>{p.name}</span>
+                      )}
+                    </span>
+                  ))}
+                </p>
+                {portfolioDomain && (
+                  <p className="text-gray-600 italic text-sm mt-1">
+                    (Details and live demos at {portfolioDomain})
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

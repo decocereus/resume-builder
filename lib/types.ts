@@ -34,6 +34,7 @@ export interface ExperienceItem {
   startDate: string
   endDate: string
   achievements: string[]
+  techStack?: string[]
 }
 
 export interface Experience {

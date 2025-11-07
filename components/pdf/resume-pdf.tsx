@@ -21,6 +21,13 @@ Font.register({
   src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf",
 });
 
+// Add italic variant so fontStyle: "italic" resolves correctly
+Font.register({
+  family: "Roboto",
+  src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-italic-webfont.ttf",
+  fontStyle: "italic",
+});
+
 // Define styles for PDF document
 const styles = StyleSheet.create({
   page: {
@@ -141,16 +148,19 @@ const styles = StyleSheet.create({
   },
   bulletItem: {
     flexDirection: "row",
-    marginBottom: 1,
+    alignItems: "flex-start",
+    marginBottom: 2,
     width: "100%",
   },
   bullet: {
     width: 10,
     fontSize: 10,
+    marginTop: 1,
   },
   bulletText: {
     flex: 1,
     fontSize: 10,
+    lineHeight: 1.35,
   },
   // Skills bar
   skillContainer: {
@@ -176,34 +186,40 @@ const styles = StyleSheet.create({
   icon: {
     width: 12,
     height: 12,
+    marginLeft: -4,
   },
 });
 
 const renderRichText = (text: string, baseStyle = {}) => {
   const parts = text.split(/(\*\*.*?\*\*)/g);
   return parts.map((part, i) => {
+    if (!part) return null;
     if (part.startsWith("**") && part.endsWith("**")) {
       const content = part.slice(2, -2);
       return (
-        <Text
-          key={i}
-          style={[baseStyle, { fontFamily: "Roboto-Bold" }]}
-          wrap={true}
-        >
+        <Text key={i} style={[baseStyle, { fontFamily: "Roboto-Bold" }]}>
           {content}
         </Text>
       );
     }
-    return part ? (
-      <Text key={i} style={baseStyle} wrap={true}>
+    return (
+      <Text key={i} style={baseStyle}>
         {part}
       </Text>
-    ) : null;
+    );
   });
 };
 
 // Main PDF Component
 const ResumePDF = ({ resumeData }: { resumeData: ResumeData }) => {
+  // const portfolioLink =
+  //   resumeData.links.items.find(
+  //     (l) => l.label && l.label.toLowerCase() === "portfolio"
+  //   ) || resumeData.links.items[0];
+  // const portfolioDomain = portfolioLink
+  //   ? portfolioLink.url.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]
+  //   : undefined;
+  const portfolioDomain = undefined;
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -222,13 +238,15 @@ const ResumePDF = ({ resumeData }: { resumeData: ResumeData }) => {
                 </Text>
               </>
             )}
-            {resumeData.personal.phone && (
+            {resumeData.personal.email && (
               <>
                 <Text style={styles.headerInfoItem}>•</Text>
-                <Image src={"/phone.png"} style={styles.icon} />
-                <Text style={styles.headerInfoItem}>
-                  {resumeData.personal.phone}
-                </Text>
+                <Link
+                  src={`mailto:${resumeData.personal.email}`}
+                  style={[styles.link, { marginBottom: 0 }]}
+                >
+                  {resumeData.personal.email}
+                </Link>
               </>
             )}
           </View>
@@ -249,35 +267,7 @@ const ResumePDF = ({ resumeData }: { resumeData: ResumeData }) => {
                     {resumeData.personal.country}
                   </Text>
                 )}
-                {resumeData.personal.phone && (
-                  <Text style={{ marginBottom: 2 }}>
-                    {resumeData.personal.phone}
-                  </Text>
-                )}
-                {resumeData.personal.email && (
-                  <Link
-                    src={`mailto:${resumeData.personal.email}`}
-                    style={[styles.link, { marginBottom: 2 }]}
-                  >
-                    {resumeData.personal.email}
-                  </Link>
-                )}
-                {resumeData.personal.dateOfBirth && (
-                  <>
-                    <Text
-                      style={{
-                        color: "#6B7280",
-                        marginTop: 2,
-                        marginBottom: 2,
-                      }}
-                    >
-                      Date of birth
-                    </Text>
-                    <Text style={{ marginBottom: 2 }}>
-                      {resumeData.personal.dateOfBirth}
-                    </Text>
-                  </>
-                )}
+                {/* phone and DOB removed; email shown in header */}
                 {resumeData.personal.nationality && (
                   <>
                     <Text
@@ -304,6 +294,39 @@ const ResumePDF = ({ resumeData }: { resumeData: ResumeData }) => {
                     <Link key={index} src={link.url} style={styles.link}>
                       {link.label}
                     </Link>
+                  ))}
+                </View>
+              </View>
+            )}
+
+            {/* Education Section moved to left */}
+            {resumeData.education.items.length > 0 && (
+              <View style={[styles.section, styles.centerAlign]}>
+                <Text style={styles.leftSectionTitle}>• EDUCATION •</Text>
+                <View style={styles.centerAlign}>
+                  {resumeData.education.items.map((edu, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        marginBottom: 4,
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <Text style={styles.itemTitle}>{edu.degree}</Text>
+                      <Text style={{ fontSize: 10 }}>
+                        {edu.institution}
+                        {edu.location ? `, ${edu.location}` : ""}
+                      </Text>
+                      <Text style={styles.dateText}>
+                        {edu.startDate} — {edu.endDate}
+                      </Text>
+                      {edu.description ? (
+                        <Text style={styles.bulletText}>
+                          {renderRichText(edu.description, { fontSize: 10 })}
+                        </Text>
+                      ) : null}
+                    </View>
                   ))}
                 </View>
               </View>
@@ -366,144 +389,98 @@ const ResumePDF = ({ resumeData }: { resumeData: ResumeData }) => {
                     </Text>
                     <Text style={styles.dateText}>
                       {job.startDate} — {job.endDate || "Present"}
+                      {job.techStack && job.techStack.length > 0 && (
+                        <Text style={{ fontSize: 9, color: "#6B7280" }}>
+                          {"  • Tech: "}
+                          {job.techStack.join(", ")}
+                        </Text>
+                      )}
                     </Text>
                     <View style={styles.bulletList}>
                       {job.achievements.map((achievement, i) => (
                         <View key={i} style={styles.bulletItem}>
                           <Text style={styles.bullet}>• </Text>
-                          {renderRichText(achievement, { fontSize: 10 })}
+                          <Text style={styles.bulletText}>
+                            {renderRichText(achievement, { fontSize: 10 })}
+                          </Text>
                         </View>
                       ))}
                     </View>
+                    {/* inline tech stack handled above */}
                   </View>
                 ))}
               </View>
             )}
 
-            {/* Education Section */}
-            {resumeData.education.items.length > 0 && (
-              <View style={styles.section}>
-                <View style={styles.sectionHeading}>
-                  <Image src={"/graduation-cap.png"} style={styles.icon} />
-                  <Text style={styles.rightSectionTitle}>
-                    EDUCATION AND ACADEMICS
-                  </Text>
-                </View>
+            {/* Education Section moved to left - removed here */}
 
-                {resumeData.education.items.map((edu, index) => (
-                  <View key={index} style={styles.timelineItem}>
-                    <View style={styles.timelineDot} />
-                    <Text style={styles.itemTitle}>
-                      {edu.degree}, {edu.institution}, {edu.location}
-                    </Text>
-                    <Text style={styles.dateText}>
-                      {edu.startDate} — {edu.endDate}
-                    </Text>
-                    {edu.description && (
-                      <View style={styles.bulletText}>
-                        {renderRichText(edu.description, { fontSize: 10 })}
-                      </View>
-                    )}
-                  </View>
-                ))}
-              </View>
-            )}
-
-            {/* Internships Section */}
-            {resumeData.internships.items.length > 0 && (
+            {/* Internships & Projects (compact combined) */}
+            {(resumeData.internships.items.length > 0 ||
+              resumeData.projects.items.length > 0) && (
               <View style={styles.section}>
                 <View style={styles.sectionHeading}>
                   <Image src={"/people.png"} style={styles.icon} />
-                  <Text style={styles.rightSectionTitle}>INTERNSHIPS</Text>
+                  <Text style={styles.rightSectionTitle}>
+                    INTERNSHIPS & PROJECTS
+                  </Text>
                 </View>
-
-                {resumeData.internships.items.map((internship, index) => (
-                  <View key={index} style={styles.timelineItem}>
-                    <View style={styles.timelineDot} />
-                    <Text style={styles.itemTitle}>
-                      {internship.title} at {internship.company},{" "}
-                      {internship.location}
-                    </Text>
-                    <Text style={styles.dateText}>
-                      {internship.startDate} — {internship.endDate}
-                    </Text>
-                    <View style={styles.bulletList}>
-                      {internship.achievements.map((achievement, i) => (
-                        <View key={i} style={styles.bulletItem}>
-                          <Text style={styles.bullet}>• </Text>
-                          {renderRichText(achievement, { fontSize: 10 })}
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
-
-            {/* Projects Section */}
-            {resumeData.projects.items.length > 0 && (
-              <View style={styles.section}>
-                <View style={styles.sectionHeading}>
-                  <Image src={"/star.png"} style={styles.icon} />
-                  <Text style={styles.rightSectionTitle}>PROJECTS</Text>
-                </View>
-
-                {resumeData.projects.items.map((project, index) => (
-                  <View
-                    key={index}
-                    style={{ ...styles.timelineItem, width: "100%" }}
-                  >
-                    <View style={styles.timelineDot} />
-                    <Text style={styles.itemTitle}>
-                      {project.name}
-                      {project.name === "Resume Builder" && (
-                        <Text
-                          style={{
-                            color: "#4B5563",
-                            fontWeight: 400,
-                            margin: 0,
-                            padding: 0,
-                            fontSize: 8,
-                          }}
-                        >
-                          {"   "} (This resume is generated via this project)
+                {resumeData.internships.items.map((internship, index) => {
+                  const firstAchievement = (internship.achievements || []).find(
+                    (a) => a && a.trim().length > 0
+                  );
+                  return (
+                    <View
+                      key={`int-${index}`}
+                      style={{ paddingLeft: 12, marginBottom: 4 }}
+                    >
+                      <Text style={styles.itemTitle}>
+                        {internship.title}, {internship.company} —{" "}
+                        {internship.location} ({internship.startDate}
+                        {internship.endDate ? `–${internship.endDate}` : ""})
+                      </Text>
+                      {firstAchievement ? (
+                        <Text style={{ fontSize: 10 }}>
+                          {renderRichText(firstAchievement, { fontSize: 10 })}
                         </Text>
-                      )}
-                    </Text>
-
-                    <View style={styles.bulletList}>
-                      {project.details.map((detail, i) => (
-                        <View key={i} style={styles.bulletItem}>
-                          <Text style={styles.bullet}>• </Text>
-                          {renderRichText(detail, { fontSize: 10 })}
-                        </View>
-                      ))}
+                      ) : null}
                     </View>
-                    {project.url && (
-                      <View
+                  );
+                })}
+                {resumeData.projects.items.length > 0 && (
+                  <View style={{ paddingLeft: 12 }}>
+                    <Text style={styles.itemTitle}>
+                      {resumeData.projects.items.map((p, i) => (
+                        <Text key={`projname-${i}`}>
+                          {i > 0 ? " • " : ""}
+                          {p.url ? (
+                            <Link
+                              src={p.url}
+                              style={{
+                                textDecoration: "underline",
+                                color: "#000000",
+                              }}
+                            >
+                              {p.name}
+                            </Link>
+                          ) : (
+                            p.name
+                          )}
+                        </Text>
+                      ))}
+                    </Text>
+                    {portfolioDomain ? (
+                      <Text
                         style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "flex-start",
-                          width: "100%",
-                          gap: 2,
+                          fontSize: 10,
+                          color: "#6B7280",
+                          fontStyle: "italic",
                         }}
                       >
-                        <Image
-                          src={"/link.png"}
-                          style={{ width: 10, height: 10, marginTop: 5 }}
-                        />
-
-                        <Link
-                          src={project.url}
-                          style={[styles.link, { fontSize: 10, marginTop: 3 }]}
-                        >
-                          Project: {project.url}
-                        </Link>
-                      </View>
-                    )}
+                        (Details and live demos at {portfolioDomain})
+                      </Text>
+                    ) : null}
                   </View>
-                ))}
+                )}
               </View>
             )}
           </View>

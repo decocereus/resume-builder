@@ -49,20 +49,8 @@ const PersonalItems = ({ items }: { items: any }) => {
     <>
       {items.location && <p>{items.location}</p>}
       {items.country && <p>{items.country}</p>}
-      {items.phone && <p>{items.phone}</p>}
-      {items.email && (
-        <p className="px-2 text-center">
-          <Link href={`mailto:${items.email}`} className="text-black underline">
-            {items.email}
-          </Link>
-        </p>
-      )}
-      {items.dateOfBirth && (
-        <>
-          <p className="text-gray-500">Date of birth</p>
-          <p>{items.dateOfBirth}</p>
-        </>
-      )}
+      {/* phone and email moved/removed per requirements */}
+      {/* DOB removed */}
       {items.nationality && (
         <>
           <p className="text-gray-500">Nationality</p>
@@ -80,7 +68,7 @@ const SectionContainer = ({
 }: {
   heading: string;
   items: any;
-  type: "text" | "link" | "skill" | "personal";
+  type: "text" | "link" | "skill" | "personal" | "education";
 }) => {
   return (
     <section className="w-full flex flex-col items-center justify-center space-y-1">
@@ -98,6 +86,20 @@ const SectionContainer = ({
               {type === "skill" && (
                 <SkillItem name={item.name} proficiency={item.proficiency} />
               )}
+              {type === "education" && (
+                <div className="text-center">
+                  <p className="font-semibold text-black">{item.degree}</p>
+                  <p>{item.institution}</p>
+                  {item.location && (
+                    <p className="text-gray-700">{item.location}</p>
+                  )}
+                  {(item.startDate || item.endDate) && (
+                    <p className="text-gray-500">
+                      {item.startDate} {item.endDate && `— ${item.endDate}`}
+                    </p>
+                  )}
+                </div>
+              )}
             </Fragment>
           ))}
         {type === "personal" && <PersonalItems items={items} />}
@@ -108,7 +110,7 @@ const SectionContainer = ({
 
 const LeftSection = () => {
   const { resumeData } = useResumeContext();
-  const { personal, links, skills, extracurriculars } = resumeData;
+  const { personal, links, skills, extracurriculars, education } = resumeData;
   return (
     <div className="md:w-1/4 space-y-4">
       <SectionContainer heading="DETAILS" items={personal} type="personal" />
@@ -116,6 +118,15 @@ const LeftSection = () => {
       {/* Links Section */}
       {links.items.length > 0 && (
         <SectionContainer heading="Links" items={links?.items} type="link" />
+      )}
+
+      {/* Education Section moved to left */}
+      {education.items.length > 0 && (
+        <SectionContainer
+          heading="Education"
+          items={education?.items}
+          type="education"
+        />
       )}
 
       {/* Skills Section */}
